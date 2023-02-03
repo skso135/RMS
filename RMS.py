@@ -4,7 +4,7 @@
 
 
 
-import os, platform, psutil, schedule, datetime, pymssql
+import platform, psutil, schedule, datetime, pymssql, time
 
 # 함수 선언
 def message():
@@ -28,34 +28,48 @@ def message():
     #print("<수집정보>\n{}".format())
 
     #OS 종류, 버전, PC명, ip, mac
-    os_kind = platform.system()
-    os_ver = platform.release()
-    pc_name = platform.node()
-    ip_info = psutil.net_if_addrs()
+    os_kind = platform.system()                                 # os 종류
+    os_ver = platform.release()                                 # os 버전
+    pc_name = platform.node()                                   # PC컴퓨터명
+    ip_mac = psutil.net_if_addrs().get('이더넷')[0].address     # mac주소
+    ip_info = psutil.net_if_addrs().get('이더넷')[1].address    # ip주소
     
-    # ip_mac = 
-    print(ip_info.get('이더넷')[1].address)
+    #####리소스 수집#####
+    cpu_used = psutil.cpu_percent()                             # cpu 사용율
+    mem_ttl = psutil.virtual_memory().total                     # 메모리TTL
+    mem_used = psutil.virtual_memory().used                     # 메모리사용량
+    mem_userate = psutil.virtual_memory().percent               # 메모리사용율
+    mem_availrate = psutil.virtual_memory().available           # 메모리여유율
 
-    #cpu 사용율
-    cpu_used = psutil.cpu_percent()
-    #메모리 ttl, 사용량, 사용율
     #네트워크 다운로드양, 업로드양, 초당수신트래픽, 초당발신트래픽
+    down_ttl_bef = psutil.net_io_counters().bytes_recv          # 1초전 다운로드량
+    up_ttl_bef = psutil.net_io_counters().bytes_sent            # 1초전 업로드량
+    time.sleep(1)                                               # 1초 딜레이
+    down_ttl = psutil.net_io_counters().bytes_recv              # 현재 다운로드량
+    up_ttl = psutil.net_io_counters().bytes_sent                # 현재 업로드량
+    down_speed = down_ttl - down_ttl_bef                        # 초당 다운로드
+    up_speed = up_ttl - up_ttl_bef                              # 초당 업로드
     #디스트 경로, ttl, 사용량, 사용율
+    DiskList = []                                               # disklist 선언
+    for i in psutil.disk_partitions():                          # 디스크파티션 요소로 반복
+        if i.fstype == 'NTFS':                                  # NTFS일때 
+            DiskList.append(i.device)                           # disklist에 추가
+    for i in DiskList:                                          # disklist 요소로 반복
+        disk_path = i                                           # 디스크경로
+        disk_ttl = psutil.disk_usage(i).total                   # 디스크총용량
+        disk_used = psutil.disk_usage(i).used                   # 디스크사용량
+        disk_userate = psutil.disk_usage(i).percent             # 디스크사용율
+        disk_availrate = 100-disk_userate                       # 디스크여유율
+        print("경로:{}, 총용량:{}, 사용량:{}, 사용율:{}, 여유율:{}".format(disk_path,disk_ttl, disk_used, disk_userate, disk_availrate))
+
+
+    
 
     #cursor.execute('insert')   #DB INSERT
     con.close() #DB연결해제
 
 
-    
 
-# dict_items([
-# ('이더넷', [snicaddr(family=<AddressFamily.AF_LINK: -1>, address='B0-25-AA-3B-6C-3F', netmask=None, broadcast=None, ptp=None), snicaddr(family=<AddressFamily.AF_INET: 2>, address='192.168.13.104', netmask='255.255.255.0', broadcast=None, ptp=None), snicaddr(family=<AddressFamily.AF_INET6: 23>, address='fe80::b6a4:b22c:3d1:6c75', netmask=None, broadcast=None, ptp=None)]), 
-# ('Wi-Fi', [snicaddr(family=<AddressFamily.AF_LINK: -1>, address='34-2E-B7-EA-B0-D7', netmask=None, broadcast=None, ptp=None), snicaddr(family=<AddressFamily.AF_INET: 2>, address='169.254.183.32', netmask='255.255.0.0', broadcast=None, ptp=None), snicaddr(family=<AddressFamily.AF_INET6: 23>, address='fe80::e348:629c:2cdf:a503', netmask=None, broadcast=None, ptp=None)]), 
-# ('로컬 영역 연결* 1', [snicaddr(family=<AddressFamily.AF_LINK: -1>, address='34-2E-B7-EA-B0-D8', netmask=None, broadcast=None, ptp=None), snicaddr(family=<AddressFamily.AF_INET: 2>, address='169.254.74.106', netmask='255.255.0.0', broadcast=None, ptp=None), snicaddr(family=<AddressFamily.AF_INET6: 23>, address='fe80::6627:14e3:da95:ccd5', netmask=None, broadcast=None, ptp=None)]), 
-# ('로컬 영역 연결* 10', [snicaddr(family=<AddressFamily.AF_LINK: -1>, address='36-2E-B7-EA-B0-D7', netmask=None, broadcast=None, ptp=None), snicaddr(family=<AddressFamily.AF_INET: 2>, address='169.254.201.254', netmask='255.255.0.0', broadcast=None, ptp=None), snicaddr(family=<AddressFamily.AF_INET6: 23>, address='fe80::71df:bcff:bbc3:f872', netmask=None, broadcast=None, ptp=None)]), 
-# ('Bluetooth 네트워크 연결 3', [snicaddr(family=<AddressFamily.AF_LINK: -1>, address='34-2E-B7-EA-B0-DB', netmask=None, broadcast=None, ptp=None), snicaddr(family=<AddressFamily.AF_INET: 2>, address='169.254.155.156', netmask='255.255.0.0', broadcast=None, ptp=None), snicaddr(family=<AddressFamily.AF_INET6: 23>, address='fe80::fb60:e766:d792:ab3b', netmask=None, broadcast=None, ptp=None)]), 
-# ('Loopback Pseudo-Interface 1', [snicaddr(family=<AddressFamily.AF_INET: 2>, address='127.0.0.1', netmask='255.0.0.0', broadcast=None, ptp=None), snicaddr(family=<AddressFamily.AF_INET6: 23>, address='::1', netmask=None, broadcast=None, ptp=None)])
-# ])
 
 # 실행소스
 rep_time = 10                               # 반복주기
