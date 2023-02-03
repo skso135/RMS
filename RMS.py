@@ -26,7 +26,7 @@ def resource_trace():
     cursor = con.cursor()
 
     #####리소스수집부분#####
-    
+    current_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S") # 현재시간
     os_kind = platform.system()                                 # os 종류
     os_ver = platform.release()                                 # os 버전
     pc_name = platform.node()                                   # PC컴퓨터명
@@ -74,12 +74,11 @@ def resource_trace():
 
 
 # 실행소스
-current_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S") # 현재시간
 rep_time = 10                                          # 반복주기
 schedule.every(rep_time).minutes.do(resource_trace)    # 반복설정
-print("<데이터수집중({})... 수집주기:{}분>".format(current_time,rep_time))
+print("<데이터수집중({})... 수집주기:{}분>".format(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),rep_time))
 
-# schedule.every(3).seconds.do(resource_trace)                 # 반복설정
+# schedule.every(rep_time).seconds.do(resource_trace)                 # 반복설정
 
 # 스캐쥴 시작
 while True:
