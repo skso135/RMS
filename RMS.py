@@ -8,12 +8,23 @@
 ##### pymssql : mssql 연결을 위한 패키지
 ##### psutil : 시스템 리소스 정보출력을 위한 패키지
 ##### platform : OS 정보출력을 위한 패키지
+##### math : 사이즈 변환 함수 작성을 위한 패키지
 #####
 
 
-import platform, psutil, schedule, datetime, pymssql, time
+import platform, psutil, schedule, datetime, pymssql, time, math
 
-# 함수 선언
+# 사이즈 변환 함수
+def convert_size(size_bytes):
+   if size_bytes == 0:
+       return "0B"
+   size_name = ("B", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB")
+   i = int(math.floor(math.log(size_bytes, 1024)))
+   p = math.pow(1024, i)
+   s = round(size_bytes / p, 2)
+   return "%s%s" % (s, size_name[i])
+
+# 리소스 수집 및 출력 함수
 def resource_trace():
     #####DB연결부분#####
     #DB연결정보
@@ -50,8 +61,9 @@ def resource_trace():
             DiskList.append(i.device)                           # disklist에 추가
     
     #####정보출력부분#####
-    print("\n<데이터 수집시간:{} 수집주기:{}분>\n<리소스정보>\nOS종류:{}, OS버전:{}, PC명:{}, IP주소:{}, MAC주소:{}\nCPU사용율:{}, Memory총용량:{}, Memory사용량:{}, Memory사용율:{}, Memory여유율:{}\n다운로드속도:{}, 업로드속도:{}"
-    .format(str(current_time),rep_time,os_kind,os_ver,pc_name,ip_info,ip_mac,cpu_used,mem_ttl,mem_used,mem_userate,mem_availrate,down_speed,up_speed))
+    #########################데이터 환산 human2
+    print("\n<데이터 수집시간:{} 수집주기:{}분>\n<리소스정보>\nOS종류:{} | OS버전:{} | PC명:{} | IP주소:{} | MAC주소:{}\nCPU사용율:{}% | Memory총용량:{} | Memory사용량:{} | Memory사용율:{}% | Memory여유율:{}%\n다운로드속도:{}/s | 업로드속도:{}/s"
+    .format(str(current_time),rep_time,os_kind,os_ver,pc_name,ip_info,ip_mac,cpu_used,convert_size(mem_ttl),convert_size(mem_used),mem_userate,mem_availrate,convert_size(down_speed),convert_size(up_speed)))
     
     #####디스크정보수집#####
     sqlquery = ""
@@ -61,7 +73,7 @@ def resource_trace():
         disk_used = psutil.disk_usage(i).used                   # 디스크사용량
         disk_userate = psutil.disk_usage(i).percent             # 디스크사용율
         disk_availrate = round(100-disk_userate,2)              # 디스크여유율
-        print("경로:{}, 총용량:{}, 사용량:{}, 사용율:{}, 여유율:{}".format(disk_path,disk_ttl,disk_used,disk_userate,disk_availrate))
+        print("경로:{} | 총용량:{} | 사용량:{} | 사용율:{}% | 여유율:{}%".format(disk_path,convert_size(disk_ttl),convert_size(disk_used),disk_userate,disk_availrate))
         #####insert query문#####
         sqlquery += ("insert into rms100 values('{}','{}','{}','{}','{}','{}',{},{},{},{},{},{},{},{},{},'{}',{},{},{},{},'{}');"
         .format((ip_mac+"_"+ip_info),os_kind,os_ver,pc_name,ip_info,ip_mac,cpu_used,mem_ttl,mem_used,mem_userate,mem_availrate,down_ttl,up_ttl,down_speed,up_speed,disk_path,disk_ttl,disk_used,disk_userate,disk_availrate,current_time))
@@ -78,7 +90,7 @@ rep_time = 10                                          # 반복주기
 schedule.every(rep_time).minutes.do(resource_trace)    # 반복설정
 print("<데이터수집중({})... 수집주기:{}분>".format(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),rep_time))
 
-# schedule.every(rep_time).seconds.do(resource_trace)                 # 반복설정
+# schedule.every(1).seconds.do(resource_trace)                 # 반복설정
 
 # 스캐쥴 시작
 while True:
