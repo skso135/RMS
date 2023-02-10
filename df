@@ -1,0 +1,45 @@
+[33m896970d[m[33m ([m[1;36mHEAD -> [m[1;32mmain[m[33m)[m HEAD@{0}: commit: 11
+[33m3d56b12[m HEAD@{1}: reset: moving to 3d56b12
+[33m2a821a2[m[33m ([m[1;31morigin/main[m[33m)[m HEAD@{2}: reset: moving to 2a821a2
+[33m89b0027[m HEAD@{3}: reset: moving to 89b0027
+[33m2a821a2[m[33m ([m[1;31morigin/main[m[33m)[m HEAD@{4}: pull --tags origin main: Fast-forward
+[33m5a0c729[m HEAD@{5}: reset: moving to HEAD^
+[33m52bb40b[m HEAD@{6}: reset: moving to HEAD^
+[33m5cab848[m HEAD@{7}: reset: moving to HEAD^
+[33m2a821a2[m[33m ([m[1;31morigin/main[m[33m)[m HEAD@{8}: reset: moving to HEAD^
+[33m3d56b12[m HEAD@{9}: reset: moving to HEAD^
+[33m9e0123d[m HEAD@{10}: reset: moving to HEAD^
+[33m4e5fcea[m HEAD@{11}: reset: moving to HEAD
+[33m4e5fcea[m HEAD@{12}: reset: moving to HEAD^
+[33m877aa70[m HEAD@{13}: reset: moving to HEAD^
+[33mfbcf846[m HEAD@{14}: reset: moving to HEAD
+[33mfbcf846[m HEAD@{15}: reset: moving to HEAD
+[33mfbcf846[m HEAD@{16}: reset: moving to HEAD^
+[33m89b0027[m HEAD@{17}: reset: moving to HEAD
+[33m89b0027[m HEAD@{18}: reset: moving to HEAD
+[33m89b0027[m HEAD@{19}: reset: moving to HEAD
+[33m89b0027[m HEAD@{20}: reset: moving to HEAD
+[33m89b0027[m HEAD@{21}: checkout: moving from main to main
+[33m89b0027[m HEAD@{22}: commit: readme수정
+[33mfbcf846[m HEAD@{23}: commit: 파일수정
+[33m877aa70[m HEAD@{24}: commit: 파일분할압축
+[33m4e5fcea[m HEAD@{25}: commit: 파일분할압축
+[33m9e0123d[m HEAD@{26}: commit: 파일 경로 변경
+[33m3d56b12[m HEAD@{27}: commit: DLL검색P/G, 설치P/G 추가
+[33m2a821a2[m[33m ([m[1;31morigin/main[m[33m)[m HEAD@{28}: commit: 소스수정
+[33m5cab848[m HEAD@{29}: commit: readme수정
+[33m52bb40b[m HEAD@{30}: commit: 수정
+[33m5a0c729[m HEAD@{31}: commit: 수집주기 수동입력으로 변경
+[33m6adb1e9[m HEAD@{32}: commit: 수집주기수정
+[33m51d71d2[m HEAD@{33}: pull --tags origin main: Merge made by the 'recursive' strategy.
+[33mbaf94dc[m HEAD@{34}: commit: 230206단위환산소스추가
+[33m1dc5ce1[m HEAD@{35}: commit: readme 수정
+[33m511a975[m HEAD@{36}: pull --tags origin main: Merge made by the 'recursive' strategy.
+[33m5e2e709[m HEAD@{37}: commit: time source modify
+[33m8e3d175[m HEAD@{38}: commit: Dev END 230203 Fri 16:36
+[33m97a02b2[m HEAD@{39}: commit: 230203 중간저장
+[33m6435e03[m HEAD@{40}: commit: 230202퇴근
+[33m66a2f76[m HEAD@{41}: commit: 중간저장
+[33m90e465a[m HEAD@{42}: commit: new upload
+[33m43c17c3[m HEAD@{43}: Branch: renamed refs/heads/master to refs/heads/main
+[33m43c17c3[m HEAD@{45}: commit (initial): first commit

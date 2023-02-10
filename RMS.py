@@ -47,7 +47,7 @@ def resource_trace():
     mem_ttl = psutil.virtual_memory().total                     # 메모리TTL
     mem_used = psutil.virtual_memory().used                     # 메모리사용량
     mem_userate = psutil.virtual_memory().percent               # 메모리사용율
-    mem_availrate = 100 - mem_userate                           # 메모리여유율
+    mem_availrate = round(100 - mem_userate,2)                  # 메모리여유율
     down_ttl_bef = psutil.net_io_counters().bytes_recv          # 1초전 다운로드량
     up_ttl_bef = psutil.net_io_counters().bytes_sent            # 1초전 업로드량
     time.sleep(1)                                               # 1초 딜레이
@@ -62,7 +62,7 @@ def resource_trace():
     
     #####정보출력부분#####
     #########################데이터 환산 human2
-    print("\n<데이터 수집시간:{} 수집주기:{}분>\n<리소스정보>\nOS종류:{} | OS버전:{} | PC명:{} | IP주소:{} | MAC주소:{}\nCPU사용율:{}% | Memory총용량:{} | Memory사용량:{} | Memory사용율:{}% | Memory여유율:{}%\n다운로드속도:{}/s | 업로드속도:{}/s"
+    print("\n<데이터 수집시간:{} 수집주기:{}초>\n<리소스정보>\n[OS정보] 종류:{} | 버전:{} | PC명:{} | IP주소:{} | MAC주소:{}\n[CPU정보] 사용율:{}%\n[Memory정보] 총용량:{} | 사용량:{} | 사용율:{}% | 여유율:{}%\n[Network정보] 다운로드속도:{}/s | 업로드속도:{}/s"
     .format(str(current_time),rep_time,os_kind,os_ver,pc_name,ip_info,ip_mac,cpu_used,convert_size(mem_ttl),convert_size(mem_used),mem_userate,mem_availrate,convert_size(down_speed),convert_size(up_speed)))
     
     #####디스크정보수집#####
@@ -73,7 +73,7 @@ def resource_trace():
         disk_used = psutil.disk_usage(i).used                   # 디스크사용량
         disk_userate = psutil.disk_usage(i).percent             # 디스크사용율
         disk_availrate = round(100-disk_userate,2)              # 디스크여유율
-        print("경로:{} | 총용량:{} | 사용량:{} | 사용율:{}% | 여유율:{}%".format(disk_path,convert_size(disk_ttl),convert_size(disk_used),disk_userate,disk_availrate))
+        print("[DISK정보] 경로:{} | 총용량:{} | 사용량:{} | 사용율:{}% | 여유율:{}%".format(disk_path,convert_size(disk_ttl),convert_size(disk_used),disk_userate,disk_availrate))
         #####insert query문#####
         sqlquery += ("insert into rms100 values('{}','{}','{}','{}','{}','{}',{},{},{},{},{},{},{},{},{},'{}',{},{},{},{},'{}');"
         .format((ip_mac+"_"+ip_info),os_kind,os_ver,pc_name,ip_info,ip_mac,cpu_used,mem_ttl,mem_used,mem_userate,mem_availrate,down_ttl,up_ttl,down_speed,up_speed,disk_path,disk_ttl,disk_used,disk_userate,disk_availrate,current_time))
@@ -95,6 +95,9 @@ print("<데이터수집중({})... 수집주기:{}초>".format(datetime.datetime.
 # 스캐쥴 시작
 while True:
     schedule.run_pending()
+
+
+
 
 
 
