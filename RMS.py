@@ -9,10 +9,11 @@
 ##### psutil : 시스템 리소스 정보출력을 위한 패키지
 ##### platform : OS 정보출력을 위한 패키지
 ##### math : 사이즈 변환 함수 작성을 위한 패키지
+##### traceback : 스케쥴 무한반복 예외시 에러메세지 확인용 패키지
 #####
 
 
-import platform, psutil, schedule, datetime, pymssql, time, math
+import platform, psutil, schedule, datetime, pymssql, time, math, traceback
 
 # 사이즈 변환 함수
 def convert_size(size_bytes):
@@ -79,7 +80,7 @@ def resource_trace():
         .format((ip_mac+"_"+ip_info),os_kind,os_ver,pc_name,ip_info,ip_mac,cpu_used,mem_ttl,mem_used,mem_userate,mem_availrate,down_ttl,up_ttl,down_speed,up_speed,disk_path,disk_ttl,disk_used,disk_userate,disk_availrate,current_time))
     
     #####DB 데이터 전송부분#####
-    cursor.execute(sqlquery)    
+    #cursor.execute(sqlquery)    
     con.commit()    # DB입력승인
     con.close()     # DB연결해제
 
@@ -87,14 +88,19 @@ def resource_trace():
 
 # 실행소스
 rep_time = int(input("수집주기를 입력해주세요(초 단위, 3600초=1시간) --> "))  # 반복주기
-schedule.every(rep_time).seconds.do(resource_trace)          # 반복설정
+# schedule.every(rep_time).seconds.do(resource_trace)          # 반복설정
 print("<데이터수집중({})... 수집주기:{}초>".format(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),rep_time))
-
+print(psutil.disk_partitions())
 # schedule.every(1).seconds.do(resource_trace)                 # 반복설정
 
 # 스캐쥴 시작
 while True:
-    schedule.run_pending()
+    try : 
+        schedule.run_pending()
+    except Exception as e:
+        print(traceback.format_exc())
+        print(e)
+        break
 
 
 
