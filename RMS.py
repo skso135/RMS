@@ -88,7 +88,7 @@ def resource_trace():
 
 # 실행소스
 rep_time = int(input("수집주기를 입력해주세요(초 단위, 3600초=1시간) --> "))  # 반복주기
-# schedule.every(rep_time).seconds.do(resource_trace)          # 반복설정
+schedule.every(rep_time).seconds.do(resource_trace)          # 반복설정
 print("<데이터수집중({})... 수집주기:{}초>".format(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),rep_time))
 print(psutil.disk_partitions())
 # schedule.every(1).seconds.do(resource_trace)                 # 반복설정
