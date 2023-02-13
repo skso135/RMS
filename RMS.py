@@ -30,13 +30,13 @@ def resource_trace():
     print("1번부분")
     #####DB연결부분#####
     #DB연결정보
-    server = '192.168.10.49'
-    database = 'RMS'
-    username = 'sa'
-    password = 'emtech@2580'
-    #DB접속
-    con = pymssql.connect(server, username, password, database)
-    cursor = con.cursor()
+    # server = '192.168.10.49'
+    # database = 'RMS'
+    # username = 'sa'
+    # password = 'emtech@2580'
+    # #DB접속
+    # con = pymssql.connect(server, username, password, database)
+    # cursor = con.cursor()
 
     # #####리소스수집부분#####
     # current_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S") # 현재시간
@@ -82,8 +82,8 @@ def resource_trace():
     
     # #####DB 데이터 전송부분#####
     # #cursor.execute(sqlquery)    
-    con.commit()    # DB입력승인
-    con.close()     # DB연결해제
+    # con.commit()    # DB입력승인
+    # con.close()     # DB연결해제
     print("2번부분")
 
 
