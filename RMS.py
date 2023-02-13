@@ -56,10 +56,10 @@ def resource_trace():
     up_ttl = psutil.net_io_counters().bytes_sent                # 현재 업로드량
     down_speed = down_ttl - down_ttl_bef                        # 초당 다운로드
     up_speed = up_ttl - up_ttl_bef                              # 초당 업로드
-    DiskList = []                                               # disklist 선언
-    for i in psutil.disk_partitions():                          # 디스크파티션 요소로 반복
-        if i.fstype == 'NTFS':                                  # NTFS일때 
-            DiskList.append(i.device)                           # disklist에 추가
+    # DiskList = []                                               # disklist 선언
+    # for i in psutil.disk_partitions():                          # 디스크파티션 요소로 반복
+    #     if i.fstype == 'NTFS':                                  # NTFS일때 
+    #         DiskList.append(i.device)                           # disklist에 추가
     
     #####정보출력부분#####
     #########################데이터 환산 human2
@@ -67,17 +67,17 @@ def resource_trace():
     .format(str(current_time),rep_time,os_kind,os_ver,pc_name,ip_info,ip_mac,cpu_used,convert_size(mem_ttl),convert_size(mem_used),mem_userate,mem_availrate,convert_size(down_speed),convert_size(up_speed)))
     
     #####디스크정보수집#####
-    sqlquery = ""
-    for i in DiskList:                                          # disklist 요소로 반복
-        disk_path = i                                           # 디스크경로
-        disk_ttl = psutil.disk_usage(i).total                   # 디스크총용량
-        disk_used = psutil.disk_usage(i).used                   # 디스크사용량
-        disk_userate = psutil.disk_usage(i).percent             # 디스크사용율
-        disk_availrate = round(100-disk_userate,2)              # 디스크여유율
-        print("[DISK정보] 경로:{} | 총용량:{} | 사용량:{} | 사용율:{}% | 여유율:{}%".format(disk_path,convert_size(disk_ttl),convert_size(disk_used),disk_userate,disk_availrate))
-        #####insert query문#####
-        sqlquery += ("insert into rms100 values('{}','{}','{}','{}','{}','{}',{},{},{},{},{},{},{},{},{},'{}',{},{},{},{},'{}');"
-        .format((ip_mac+"_"+ip_info),os_kind,os_ver,pc_name,ip_info,ip_mac,cpu_used,mem_ttl,mem_used,mem_userate,mem_availrate,down_ttl,up_ttl,down_speed,up_speed,disk_path,disk_ttl,disk_used,disk_userate,disk_availrate,current_time))
+    # sqlquery = ""
+    # for i in DiskList:                                          # disklist 요소로 반복
+    #     disk_path = i                                           # 디스크경로
+    #     disk_ttl = psutil.disk_usage(i).total                   # 디스크총용량
+    #     disk_used = psutil.disk_usage(i).used                   # 디스크사용량
+    #     disk_userate = psutil.disk_usage(i).percent             # 디스크사용율
+    #     disk_availrate = round(100-disk_userate,2)              # 디스크여유율
+    #     print("[DISK정보] 경로:{} | 총용량:{} | 사용량:{} | 사용율:{}% | 여유율:{}%".format(disk_path,convert_size(disk_ttl),convert_size(disk_used),disk_userate,disk_availrate))
+    #     #####insert query문#####
+    #     sqlquery += ("insert into rms100 values('{}','{}','{}','{}','{}','{}',{},{},{},{},{},{},{},{},{},'{}',{},{},{},{},'{}');"
+    #     .format((ip_mac+"_"+ip_info),os_kind,os_ver,pc_name,ip_info,ip_mac,cpu_used,mem_ttl,mem_used,mem_userate,mem_availrate,down_ttl,up_ttl,down_speed,up_speed,disk_path,disk_ttl,disk_used,disk_userate,disk_availrate,current_time))
     
     #####DB 데이터 전송부분#####
     #cursor.execute(sqlquery)    
@@ -88,20 +88,19 @@ def resource_trace():
 
 # 실행소스
 rep_time = int(input("수집주기를 입력해주세요(초 단위, 3600초=1시간) --> "))  # 반복주기
-# schedule.every(rep_time).seconds.do(resource_trace)          # 반복설정
+schedule.every(rep_time).seconds.do(resource_trace)          # 반복설정
 resource_trace()
 print("<데이터수집중({})... 수집주기:{}초>".format(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),rep_time))
-print(psutil.disk_partitions())
 # schedule.every(1).seconds.do(resource_trace)                 # 반복설정
 
-# # 스캐쥴 시작
-# while True:
-#     try : 
-#         schedule.run_pending()
-#     except Exception as e:
-#         print(traceback.format_exc())
-#         print(e)
-#         break
+# 스캐쥴 시작
+while True:
+    try : 
+        schedule.run_pending()
+    except Exception as e:
+        print(traceback.format_exc())
+        print(e)
+        break
 
 
 
