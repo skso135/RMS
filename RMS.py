@@ -27,16 +27,16 @@ def convert_size(size_bytes):
 
 # 리소스 수집 및 출력 함수
 def resource_trace():
-    print("1번부분")
+    # print("1번부분")
     #####DB연결부분#####
     #DB연결정보
-    # server = '192.168.10.49'
-    # database = 'RMS'
-    # username = 'sa'
-    # password = 'emtech@2580'
+    server = '192.168.10.49'
+    database = 'RMS'
+    username = 'sa'
+    password = 'emtech@2580'
     # #DB접속
-    # con = pymssql.connect(server, username, password, database)
-    # cursor = con.cursor()
+    con = pymssql.connect(server, username, password, database)
+    cursor = con.cursor()
 
     #####리소스수집부분#####
     current_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S") # 현재시간
@@ -81,30 +81,30 @@ def resource_trace():
         .format((ip_mac+"_"+ip_info),os_kind,os_ver,pc_name,ip_info,ip_mac,cpu_used,mem_ttl,mem_used,mem_userate,mem_availrate,down_ttl,up_ttl,down_speed,up_speed,disk_path,disk_ttl,disk_used,disk_userate,disk_availrate,current_time))
     
     # #####DB 데이터 전송부분#####
-    # #cursor.execute(sqlquery)    
-    # con.commit()    # DB입력승인
-    # con.close()     # DB연결해제
-    print("2번부분")
+    # cursor.execute(sqlquery)    
+    con.commit()    # DB입력승인
+    con.close()     # DB연결해제
+    # print("2번부분")
 
 
 
 # 실행소스
 rep_time = int(input("수집주기를 입력해주세요(초 단위, 3600초=1시간) --> "))  # 반복주기
-# schedule.every(rep_time).seconds.do(resource_trace)          # 반복설정
+schedule.every(rep_time).seconds.do(resource_trace)          # 반복설정
 print("<데이터수집중({})... 수집주기:{}초>".format(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),rep_time))
 # schedule.every(1).seconds.do(resource_trace)                 # 반복설정
-for i in range(5):
-    time.sleep(1)
-    resource_trace()
+# for i in range(5):
+#     time.sleep(1)
+#     resource_trace()
 
-# # 스캐쥴 시작
-# while True:
-#     try : 
-#         schedule.run_pending()
-#     except Exception as e:
-#         print(traceback.format_exc())
-#         print(e)
-#         break
+# 스캐쥴 시작
+while True:
+    try : 
+        schedule.run_pending()
+    except Exception as e:
+        print(traceback.format_exc())
+        print(e)
+        break
 
 
 
