@@ -10,10 +10,10 @@
 ##### platform : OS 정보출력을 위한 패키지
 ##### math : 사이즈 변환 함수 작성을 위한 패키지
 ##### traceback : 스케쥴 무한반복 예외시 에러메세지 확인용 패키지
-#####
+##### socket : 현재사용중인 네트워크 정보확인을 위한 패키지
 ## 230215 아나콘다로 환경 재세팅
 
-import platform, psutil, datetime, pymssql, time, math, traceback
+import platform, psutil, datetime, pymssql, time, math, traceback, socket
 # import schedule
 
 # 사이즈 변환 함수
@@ -38,13 +38,22 @@ def resource_trace():
     con = pymssql.connect(server, username, password, database)
     cursor = con.cursor()
 
-    #####리소스수집부분#####
+    ##### 단말의 통신중인 NIC IP확인 #####
+    s=socket.socket(socket.AF_INET,socket.SOCK_DGRAM)
+    s.connect(("8.8.8.8",80))
+    srv_ip = s.getsockname()[0]
+
+    # #####리소스수집부분#####
     current_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S") # 현재시간
     os_kind = platform.system()                                 # os 종류
     os_ver = platform.release()                                 # os 버전
     pc_name = platform.node()                                   # PC컴퓨터명
-    ip_info = psutil.net_if_addrs().get('이더넷')[1].address    # ip주소
-    ip_mac = psutil.net_if_addrs().get('이더넷')[0].address     # mac주소
+    ip_mac = ""
+    ip_info = ""
+    for k, v in psutil.net_if_addrs().items():                  
+        if v[1].address == srv_ip:                              # 검출된 IP가 통신중인 IP와 동일하다면
+            ip_mac = v[0].address                               # mac주소        
+            ip_info = v[1].address                              # ip주소
     cpu_used = psutil.cpu_percent()                             # cpu 사용율
     mem_ttl = psutil.virtual_memory().total                     # 메모리TTL
     mem_used = psutil.virtual_memory().used                     # 메모리사용량
@@ -62,12 +71,11 @@ def resource_trace():
         if i.fstype == 'NTFS':                                  # NTFS일때 
             DiskList.append(i.device)                           # disklist에 추가
     
-    #####정보출력부분#####
-    #########################데이터 환산 human2
+    ####정보출력부분#####
     print("\n<데이터 수집시간:{} 수집주기:{}초>\n<리소스정보>\n[OS정보] 종류:{} | 버전:{} | PC명:{} | IP주소:{} | MAC주소:{}\n[CPU정보] 사용율:{}%\n[Memory정보] 총용량:{} | 사용량:{} | 사용율:{}% | 여유율:{}%\n[Network정보] 다운로드속도:{}/s | 업로드속도:{}/s"
     .format(str(current_time),rep_time,os_kind,os_ver,pc_name,ip_info,ip_mac,cpu_used,convert_size(mem_ttl),convert_size(mem_used),mem_userate,mem_availrate,convert_size(down_speed),convert_size(up_speed)))
     
-    #####디스크정보수집#####
+    ####디스크정보수집#####
     sqlquery = ""
     for i in DiskList:                                          # disklist 요소로 반복
         disk_path = i                                           # 디스크경로
@@ -80,7 +88,7 @@ def resource_trace():
         sqlquery += ("insert into rms100 values('{}','{}','{}','{}','{}','{}',{},{},{},{},{},{},{},{},{},'{}',{},{},{},{},'{}');"
         .format((ip_mac+"_"+ip_info),os_kind,os_ver,pc_name,ip_info,ip_mac,cpu_used,mem_ttl,mem_used,mem_userate,mem_availrate,down_ttl,up_ttl,down_speed,up_speed,disk_path,disk_ttl,disk_used,disk_userate,disk_availrate,current_time))
     
-    # #####DB 데이터 전송부분#####
+    # # #####DB 데이터 전송부분#####
     cursor.execute(sqlquery)    
     con.commit()    # DB입력승인
     con.close()     # DB연결해제
@@ -92,18 +100,16 @@ rep_time = int(input("수집주기를 입력해주세요(초 단위, 3600초=1�
 print("<데이터수집중({})... 수집주기:{}초>".format(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),rep_time))
 while True:
     try : 
-        # print("<데이터수집중({})... 수집주기:{}초>".format(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),rep_time))
         resource_trace()
         time.sleep(rep_time)
     except Exception as e:
         print(traceback.format_exc())
         print("Exception Message : ",e)
         break
-# sched.every(rep_time).seconds.do(resource_trace)          # 반복설정
 
-# schedule.every(1).seconds.do(resource_trace)                 # 반복설정
 
 # # 스캐쥴 시작
+# sched.every(rep_time).seconds.do(resource_trace)          # 반복설정
 # while True:
 #     try : 
 #         sched.run_pending()
