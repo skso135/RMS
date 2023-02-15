@@ -11,9 +11,10 @@
 ##### math : 사이즈 변환 함수 작성을 위한 패키지
 ##### traceback : 스케쥴 무한반복 예외시 에러메세지 확인용 패키지
 #####
+## 230215 아나콘다로 환경 재세팅
 
-
-import platform, psutil, schedule, datetime, pymssql, time, math, traceback
+import platform, psutil, datetime, pymssql, time, math, traceback
+# import schedule
 
 # 사이즈 변환 함수
 def convert_size(size_bytes):
@@ -88,18 +89,28 @@ def resource_trace():
 
 # 실행소스
 rep_time = int(input("수집주기를 입력해주세요(초 단위, 3600초=1시간) --> "))  # 반복주기
-schedule.every(rep_time).seconds.do(resource_trace)          # 반복설정
 print("<데이터수집중({})... 수집주기:{}초>".format(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),rep_time))
-# schedule.every(1).seconds.do(resource_trace)                 # 반복설정
-
-# 스캐쥴 시작
 while True:
     try : 
-        schedule.run_pending()
+        # print("<데이터수집중({})... 수집주기:{}초>".format(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),rep_time))
+        resource_trace()
+        time.sleep(rep_time)
     except Exception as e:
         print(traceback.format_exc())
-        print(e)
+        print("Exception Message : ",e)
         break
+# sched.every(rep_time).seconds.do(resource_trace)          # 반복설정
+
+# schedule.every(1).seconds.do(resource_trace)                 # 반복설정
+
+# # 스캐쥴 시작
+# while True:
+#     try : 
+#         sched.run_pending()
+#     except Exception as e:
+#         print(traceback.format_exc())
+#         print(e)
+#         break
 
 
 
