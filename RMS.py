@@ -11,9 +11,12 @@
 ##### math : 사이즈 변환 함수 작성을 위한 패키지
 ##### traceback : 스케쥴 무한반복 예외시 에러메세지 확인용 패키지
 ##### socket : 현재사용중인 네트워크 정보확인을 위한 패키지
+##### pytz : 타임존 확인을 위한 패키지
 ## 230215 아나콘다로 환경 재세팅
 
 import platform, psutil, datetime, pymssql, time, math, traceback, socket
+from pytz import timezone
+from datetime import datetime
 # import schedule
 
 # 사이즈 변환 함수
@@ -44,16 +47,17 @@ def resource_trace():
     srv_ip = s.getsockname()[0]
 
     # #####리소스수집부분#####
-    current_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S") # 현재시간
+    current_time = datetime.now(timezone('Asia/Seoul')).strftime("%Y-%m-%d %H:%M:%S") # 현재시간
     os_kind = platform.system()                                 # os 종류
     os_ver = platform.release()                                 # os 버전
     pc_name = platform.node()                                   # PC컴퓨터명
     ip_mac = ""
     ip_info = ""
     for k, v in psutil.net_if_addrs().items():                  
-        if v[1].address == srv_ip:                              # 검출된 IP가 통신중인 IP와 동일하다면
-            ip_mac = v[0].address                               # mac주소        
-            ip_info = v[1].address                              # ip주소
+        if len(v)>1:   
+            if v[1].address == srv_ip:                              # 검출된 IP가 통신중인 IP와 동일하다면
+                ip_mac = v[0].address                               # mac주소        
+                ip_info = v[1].address                              # ip주소
     cpu_used = psutil.cpu_percent()                             # cpu 사용율
     mem_ttl = psutil.virtual_memory().total                     # 메모리TTL
     mem_used = psutil.virtual_memory().used                     # 메모리사용량
@@ -97,7 +101,8 @@ def resource_trace():
 
 # 실행소스
 rep_time = int(input("수집주기를 입력해주세요(초 단위, 3600초=1시간) --> "))  # 반복주기
-print("<데이터수집중({})... 수집주기:{}초>".format(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),rep_time))
+print("<데이터수집중({})... 수집주기:{}초>"
+      .format(datetime.now(timezone('Asia/Seoul')).strftime("%Y-%m-%d %H:%M:%S"),rep_time))
 while True:
     try : 
         resource_trace()

@@ -5,7 +5,7 @@ block_cipher = None
 
 
 a = Analysis(
-    ['C:\\Users\\N-797_LUS\\Desktop\\python_code\\PythonStudy\\practice\\RMS\\RMS.py'],
+    ['RMS.py'],
     pathex=[],
     binaries=[],
     datas=[],
@@ -41,5 +41,6 @@ exe = EXE(
     target_arch=None,
     codesign_identity=None,
     entitlements_file=None,
+    version='file_version.txt',
     icon=['icon\\monitor_icon1.ico'],
 )
