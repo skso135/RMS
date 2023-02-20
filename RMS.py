@@ -100,7 +100,7 @@ def resource_trace():
 
 
 # 실행소스
-rep_time = int(input("수집주기를 입력해주세요(초 단위, 3600초=1시간) --> "))  # 반복주기
+rep_time = 60 #int(input("수집주기를 입력해주세요(초 단위, 3600초=1시간) --> "))  # 반복주기
 print("<데이터수집중({})... 수집주기:{}초>"
       .format(datetime.now(timezone('Asia/Seoul')).strftime("%Y-%m-%d %H:%M:%S"),rep_time))
 while True:
