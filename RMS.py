@@ -58,7 +58,9 @@ def resource_trace():
             if v[1].address == srv_ip:                              # 검출된 IP가 통신중인 IP와 동일하다면
                 ip_mac = v[0].address                               # mac주소        
                 ip_info = v[1].address                              # ip주소
-    cpu_used = psutil.cpu_percent()                             # cpu 사용율
+    cpu_used = psutil.cpu_percent()                               # cpu 사용율
+    cpu_used2 = psutil.cpu_percent(percpu=True)
+    print("{}\n{}".format(cpu_used, cpu_used2))
     mem_ttl = psutil.virtual_memory().total                     # 메모리TTL
     mem_used = psutil.virtual_memory().used                     # 메모리사용량
     mem_userate = psutil.virtual_memory().percent               # 메모리사용율
