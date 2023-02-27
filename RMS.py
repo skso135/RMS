@@ -99,7 +99,7 @@ def resource_trace():
         .format((ip_mac+"_"+ip_info),os_kind,os_ver,pc_name,ip_info,ip_mac,cpu_used,mem_ttl,mem_used,mem_userate,mem_availrate,down_ttl,up_ttl,down_speed,up_speed,disk_path,disk_ttl,disk_used,disk_userate,disk_availrate,current_time))
     
     #####DB 데이터 전송부분#####
-    #cursor.execute(sqlquery)    
+    cursor.execute(sqlquery)    
     con.commit()    # DB입력승인
     con.close()     # DB연결해제
 
