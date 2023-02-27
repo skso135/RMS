@@ -37,7 +37,7 @@ def resource_trace():
     database = 'RMS'
     username = 'sa'
     password = 'emtech@2580'
-    # #DB접속
+    #DB접속
     con = pymssql.connect(server, username, password, database)
     cursor = con.cursor()
 
@@ -45,22 +45,26 @@ def resource_trace():
     s=socket.socket(socket.AF_INET,socket.SOCK_DGRAM)
     s.connect(("8.8.8.8",80))
     srv_ip = s.getsockname()[0]
-
-    # #####리소스수집부분#####
+    #####리소스수집부분#####
     current_time = datetime.now(timezone('Asia/Seoul')).strftime("%Y-%m-%d %H:%M:%S") # 현재시간
     os_kind = platform.system()                                 # os 종류
     os_ver = platform.release()                                 # os 버전
     pc_name = platform.node()                                   # PC컴퓨터명
     ip_mac = ""
     ip_info = ""
-    for k, v in psutil.net_if_addrs().items():                  
-        if len(v)>1:   
-            if v[1].address == srv_ip:                              # 검출된 IP가 통신중인 IP와 동일하다면
-                ip_mac = v[0].address                               # mac주소        
-                ip_info = v[1].address                              # ip주소
+    for k, v in psutil.net_if_addrs().items(): 
+        if len(v)>1:                                                
+            if os_kind == "Windows":
+                if v[1].address == srv_ip:                              # 검출된 IP가 통신중인 IP와 동일하다면 
+                    ip_mac = v[0].address                               # mac주소
+                    ip_info = v[1].address                              # ip주소 
+            elif os_kind == "Linux":
+                if v[0].address == srv_ip:                              # 검출된 IP가 통신중인 IP와 동일하다면 
+                    ip_mac = v[2].address                               # mac주소
+                    ip_info = v[0].address                              # ip주소
+
+            
     cpu_used = psutil.cpu_percent()                               # cpu 사용율
-    cpu_used2 = psutil.cpu_percent(percpu=True)
-    print("{}\n{}".format(cpu_used, cpu_used2))
     mem_ttl = psutil.virtual_memory().total                     # 메모리TTL
     mem_used = psutil.virtual_memory().used                     # 메모리사용량
     mem_userate = psutil.virtual_memory().percent               # 메모리사용율
@@ -73,10 +77,10 @@ def resource_trace():
     down_speed = down_ttl - down_ttl_bef                        # 초당 다운로드
     up_speed = up_ttl - up_ttl_bef                              # 초당 업로드
     DiskList = []                                               # disklist 선언
-    for i in psutil.disk_partitions():                          # 디스크파티션 요소로 반복
-        if i.fstype == 'NTFS':                                  # NTFS일때 
-            DiskList.append(i.device)                           # disklist에 추가
-    
+    for i in psutil.disk_partitions():                          # 디스크파티션 요소로 반복 
+        if i.fstype in ('NTFS','FAT12','FAT16','FAT32','ext','ext2','ext3','ext4','xfs'):        # 디스크 종류범위내에 있을때
+            DiskList.append(i.mountpoint)                           # disklist에 추가
+        
     ####정보출력부분#####
     print("\n<데이터 수집시간:{} 수집주기:{}초>\n<리소스정보>\n[OS정보] 종류:{} | 버전:{} | PC명:{} | IP주소:{} | MAC주소:{}\n[CPU정보] 사용율:{}%\n[Memory정보] 총용량:{} | 사용량:{} | 사용율:{}% | 여유율:{}%\n[Network정보] 다운로드속도:{}/s | 업로드속도:{}/s"
     .format(str(current_time),rep_time,os_kind,os_ver,pc_name,ip_info,ip_mac,cpu_used,convert_size(mem_ttl),convert_size(mem_used),mem_userate,mem_availrate,convert_size(down_speed),convert_size(up_speed)))
@@ -94,8 +98,8 @@ def resource_trace():
         sqlquery += ("insert into rms100 values('{}','{}','{}','{}','{}','{}',{},{},{},{},{},{},{},{},{},'{}',{},{},{},{},'{}');"
         .format((ip_mac+"_"+ip_info),os_kind,os_ver,pc_name,ip_info,ip_mac,cpu_used,mem_ttl,mem_used,mem_userate,mem_availrate,down_ttl,up_ttl,down_speed,up_speed,disk_path,disk_ttl,disk_used,disk_userate,disk_availrate,current_time))
     
-    # # #####DB 데이터 전송부분#####
-    cursor.execute(sqlquery)    
+    #####DB 데이터 전송부분#####
+    #cursor.execute(sqlquery)    
     con.commit()    # DB입력승인
     con.close()     # DB연결해제
 
