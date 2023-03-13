@@ -111,14 +111,18 @@ print("<데이터수집중({})... 수집주기:{}초>"
       .format(datetime.now(timezone('Asia/Seoul')).strftime("%Y-%m-%d %H:%M:%S"),rep_time))
 while True:
     try : 
-        resource_trace()
-        time.sleep(rep_time)
+        ipaddress=socket.gethostbyname(socket.gethostname())
+        if ipaddress == '127.0.0.1':                                            # 인터넷 통신불가
+            print("You are not connected to the internet! Please Check!")
+        else:                                                                   # 인터넷 통신
+            resource_trace()                                                    # 데이터 수집 함수
+        time.sleep(rep_time)                                                # 수집 딜레이
     except Exception as e:
         print(traceback.format_exc())
         print("Exception Message : ",e)
         break
 
-os.system("pause")
+os.system("pause")                                          # 에러종료시 콘솔창 유지
 
 
 
