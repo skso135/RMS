@@ -14,7 +14,7 @@
 ##### pytz : 타임존 확인을 위한 패키지
 ## 230215 아나콘다로 환경 재세팅
 
-import platform, psutil, datetime, pymssql, time, math, traceback, socket
+import platform, psutil, datetime, pymssql, time, math, traceback, socket, os
 from pytz import timezone
 from datetime import datetime
 # import schedule
@@ -117,6 +117,9 @@ while True:
         print(traceback.format_exc())
         print("Exception Message : ",e)
         break
+
+os.system("pause")
+
 
 
 # # 스캐쥴 시작
