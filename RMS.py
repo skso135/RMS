@@ -113,7 +113,8 @@ while True:
     try : 
         ipaddress=socket.gethostbyname(socket.gethostname())
         if ipaddress == '127.0.0.1':                                            # 인터넷 통신불가
-            print("\nYou are not connected to the internet! Please Check!\n")
+            print("\n{} You are not connected to the internet! Please Check!"
+            .format(datetime.now(timezone('Asia/Seoul')).strftime("%Y-%m-%d %H:%M:%S")))
         else:                                                                   # 인터넷 통신
             resource_trace()                                                    # 데이터 수집 함수
         time.sleep(rep_time)                                                # 수집 딜레이
